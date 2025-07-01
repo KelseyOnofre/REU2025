@@ -1,0 +1,24 @@
+name: Data Visualization in R
+output_dir: '.'
+navbar:
+  title: Data Visualization in R
+  left:
+  - text: Welcome
+    href: index.html
+  - text: Pre-Work
+    href: pre_work.html
+  - text: Intro to R
+    href: IntrotoR.html
+  - text: Graphing
+    href: Graphing.html
+  
+output:
+  html_document:
+    theme: readable
+    highlight: monochrome
+    css: styles.css
+    toc: yes
+    toc_depth: 3
+    toc_float: yes
+    lib_dir: site_libs
+    self_contained: no

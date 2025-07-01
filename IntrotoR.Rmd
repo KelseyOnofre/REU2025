@@ -1,0 +1,312 @@
+---
+title: "Introduction to R"
+output: 
+  html_document:
+    toc: true
+---
+
+Here are some files you will need for this workshop. You should go ahead and download them and place them in your working directory so you can follow along with the code today. 
+<br>
+[Introductory PDF](IntroSlides.pdf)<br>
+[Download CSV File](NamesScores.csv)<br>
+[Download CSV File](StripeRust.csv)<br>
+[Download CSV File](DataSetFHB.csv)<br>
+<br>
+<br>
+<br>
+
+## Working Directory
+
+First, set your working directory. This is a folder in which you will save this script, along with any files that will be used as part of your analyses. We covered this in our introductory slides, but now would be a good time to confirm your working directory is set. You can go ahead and download the files linked above and place them in your working directory. 
+<br>
+<br>
+
+## R Basics
+R is essentially a fancy calculator. We can do any basic math calculation in R if we know the correct syntax.
+```{r calculator}
+1+1
+3*2
+8^8
+```
+<br>
+<br>    
+
+### Objects 
+
+Our general workflow in R looks like this:  
+  * First, we create **objects** to store data.  
+  * **Functions** are applied on objects or another functions (i.e. to analyze the data)  
+  * Functions are organized in **packages**  
+  * As we're working, we save our code as **scripts**  
+  * We store all our scripts for a given set of objectives as **projects** <br>  
+<br>  
+
+To make programming simpler, we usually save values or sets of values that we want to use again as *objects*. We do this using the symbols "<-" or "<<-" (called the "gets arrow"). Alternatively, we can use the equals symbol "=".  
+```{r}
+a <- 2 + 2
+a # print a
+b <- a + 2
+b # print a 
+g <<- 52
+g # print a
+h <- g+b
+h
+i <- "Throckmorton Hall"
+i
+```
+Here are some useful functions for working with objects:
+
+```{r}
+length(h)
+class(h)
+```
+<br>
+<br>  
+
+### Logical Operators  
+
+For many applications, logical operators are necessary. Comparing values will return "True" or "False"
+```{r,results='hide'}
+2==2 ## does equal 
+2!=2 ## does not equal
+2<2 ## less than 
+2<=2 # less than or equal to 
+```
+<br>
+<br>  
+
+> Note: R is case-sensitive and unforgiving! You will want to be very careful about using the correct case. The object A1 is not the same as a1. 
+
+<br>
+<br>  
+
+### Vectors  
+
+Vectors are a way to turn a series of data elements into an object that can be used later. 
+
+```{r}
+v1 <- c(1, 2, 3, 4, 5) #numbers
+v1
+v2 <- c("hello", "world") #characters 
+v2
+v3 <- c("TRUE", "FALSE", "TRUE") #logical values (also could be - "T", "F", "T")
+v3
+v4 <- c(1:10) #include all values from 1-10
+v4
+v5 <- rep(1:3, 3) #repeat 1:3 three times
+v5
+v6 <- rep(1:3, each = 5) #repeat each number in the sequence three times 
+v6
+```
+<br>
+<br>
+Lets make a vector with hypothetical ratings of "R expertise" in this group on a scale of 1-10.  
+```{r}
+WithR <- c(8.5, 6.5, 4, 1, 3, 10, 5, 5, 5, 1, 1, 6, 6)
+WithR
+```
+<br>
+<br>
+We can use the following functions to better understand our vector. 
+```{r}
+length(WithR)
+summary(WithR)
+mean(WithR)
+sd(WithR)
+```
+
+And graph a histogram of this distribution!
+```{r}
+hist(WithR, xlab = "Self-Reported R Proficiency")
+```
+
+
+> Notice that I choose to name my new object "WithR". 
+> It is important to note that: <br>  
+  - R objects are case sentitive so "WithR" is different than "Withr" or "withr"<br>  
+  - Naming of objects is personal preference but the more intuitive, the better <br>  
+  - You cannot start with a number, but can end with one (WithR2) <br>  
+  - Object names can only contain letters, number, "_", and "." (WithR_2 or WithR.2) <br>  
+  
+Let's make an **object** with the number of students in the class. When reading the assignment statement below we read it as "Class Size gets 13"
+```{r}
+ClassSize <- 13 # Assignment
+ClassSize
+ClassSize <- length(WithR) ## length() will also give us the size of WithR
+ClassSize
+```
+
+Lets make a **vector** of names. 
+```{r}
+Names <- c("Jim", "Carole", "Joe", "Michelle", "Jen", "Pete", "Paul", "Tim", 
+           "Jess", "Mark", "Jill", "Cam", "Kate") ## names are random 
+Names
+```
+<br>
+<br>  
+
+## Dataframes  
+
+Let's continue with our R experience example to illustrate how we can build data frames in R. <br> 
+
+We can bind together two or more vectors to make a **dataframe** using cbind.data.frame() bring together the two columns. Note that cbind stands for "column bind" and rbind stands for "row bind".
+```{r}
+NamesScores <- cbind.data.frame(Names, WithR) #column bind
+NamesScores
+```
+
+
+Lets bind vertically to see the difference between rbind and cbind. 
+```{r}
+NamesScoresR <- rbind(Names, WithR) # row bind
+NamesScoresR <- as.data.frame(NamesScoresR) # make a dataframe
+NamesScoresR
+```
+
+
+If we want to add the age and gender of the students, we can add a vector of names as another column to the data set
+
+```{r}
+Age <- c(22, 31, 25, 21, 22, 35, 42, 27, 26, 33, 26, 28, 22) #make a vector of ages
+Gender <- c("Male", "Female", "Male", "Female", "Female", "Male","Male","Male", "Female", "Male", "Female", "Male", "Female")
+NamesScores <- cbind(NamesScores, Age, Gender) #column bind all three vectors to make a dataframe
+NamesScores
+```
+
+
+Lets save this new dataframe as a csv in our working directory using the **write.csv** function. Check to see if you have the file in your folder!
+
+```{r}
+write.csv(NamesScores, "NamesScores.csv")
+```
+
+Alternatively, we could have put together our complete dataframe using the **data.frame** function:
+```{r}
+NamesScores3 <- data.frame(
+                    Names =c("Jim", "Carole", "Joe", "Michelle", "Jen", "Pete", "Paul", "Tim", 
+                            "Jess", "Mark", "Jill", "Cam", "Kate") ,
+                    Experience = c(8.5, 6.5, 4, 1, 3, 10, 5, 5, 5, 1, 1, 6, 6) , 
+                    Age = c(22, 31, 25, 21, 22, 35, 42, 27, 26, 33, 26, 28, 22) , 
+                    Gender = c("Male", "Female", "Male", "Female", "Female", "Male","Male","Male", "Female", "Male", "Female", "Male", "Female"))
+NamesScores3            
+```
+
+<br>
+<br>  
+
+## Subsetting  
+
+What if we only care about the first four members of the class? We can use **subsetting** to select the values in our data frame that we are interested in. 
+```{r}
+## syntax: dataframe[rows, columns]
+FirstFour <- NamesScores[1:4,] ## this means select row 1 through 4 in data frame NamesScores
+FirstFour
+```
+
+What if we just wanted the second column?
+```{r}
+SecondColumn <- NamesScores[,2] ## select column 2
+SecondColumn 
+```
+
+
+
+> ##Now you try! 
+  - Make an object called "obj1" with a vector of the numbers 1-13
+  - bind that vector to our "NamesScores" object, creating a new data frame
+  - Name the new three column data frame "NamesScores2"
+  
+It might look something like this:
+```{r, echo=FALSE}
+obj1 <- c(1:13)
+NamesScores2 <- cbind.data.frame(NamesScores, obj1)
+NamesScores2
+```
+<br>
+<br>  
+
+## Functions  
+
+Functions are blocks of code that we can reuse to run set tasks in R. We have already used several functions that are built into base R (for example, rbind(), hist()). As you begin to run more complex analyses, you may choose to write functions to simplify repetitive coding tasks.   
+
+```{r}
+NewFunction <- function(a,b) {
+  a + b
+} ## first specify the parameters that you want to include in your function, then add the operations you want performed on your parameters
+
+j1 <- NewFunction(1,2) ## here is an example where we made a function to add a and b, and we set a and b to 1 and 2. 
+j1
+```
+<br>
+<br>   
+
+## Matrices  
+<br>  
+Matrices are two dimensional and contain elements of the same category. 
+```{r}
+help(matrix) ## if you want to read the documentation for a function, you can use the help() function
+Mat1 <- matrix(1,ncol=3,nrow=3) # make a matrix of 1s that's 3x3
+Mat1
+```
+
+  
+
+## Installing Packages  
+
+Packages are toolboxes that include functions, data and code for specific tasks. To get started, lets install the **package** "ggplot2". Note, remove the "#" from before install.packages() to load for the first time. The "#" comments out any code so it will not be run.
+
+```{r}
+#install.packages("ggplot2")
+library(ggplot2)
+```
+
+> #### Note: if you have installed an R package once on your computer, you will not need to install it again unless you have a major software update. However, you will need to *load* the library at the begining of each new session using the library() function.   
+
+
+  
+## Getting Data Into R
+  
+
+Now make sure to place your "StripeRust.csv" file in the working directory that we set, then load the data in using the "read.csv" *function*. 
+```{r}
+RustData <- read.csv("StripeRust.csv", header = TRUE)  #Header = TRUE lets R know that we have headings in the first row of our data set.
+head(RustData) ## check the first few rows of the dataset
+names(RustData) ## check the column headers 
+```
+
+
+#### Note: this data is disease severity ratings taken in a wheat stripe rust nursury over the course of two seasons. "DAI" = days after inoculation.
+
+
+We can plot this data using ggplot2. Tell the graphing function to use the data "RustData" and then add a layer to the plot with the geom_point() function with severity on the y axis and time on the x axis. Color the points by the year that data was collected.
+```{r}
+ggplot(data = RustData) + 
+geom_point(mapping = aes(x = DAI, y = Severity, color = Year))
+```
+
+<!-- >#### Note: It looks like disease took longer to develop in year 2, and was less severe by day 100. -->
+
+
+<!-- If we switch from the function "geom_point" to "geom_line" we can plot lines and not points.   -->
+<!-- ```{r} -->
+<!-- ggplot(data = RustData) + -->
+<!--   geom_line(mapping = aes(x = DAI, y = Severity, color = Year)) -->
+<!-- ``` -->
+
+<!-- We can look at the graphs side-by-side using the facet_wrap() function.  -->
+<!-- ```{r} -->
+<!-- ggplot(data = RustData) + -->
+<!--   geom_point(mapping = aes(x = DAI, y = Severity)) + -->
+<!--   facet_wrap(~Year)  -->
+<!-- ``` -->
+
+<!-- > #### Note: be sure to include a "+" at the end of each line, until you want to close the command.    -->
+
+<!-- Finally, lets add a title!  -->
+<!-- ```{r} -->
+<!-- ggplot(data = RustData) + -->
+<!--   geom_point(mapping = aes(x = DAI, y = Severity, color = Year)) + -->
+<!--   facet_wrap(~Year) + -->
+<!--   labs(title = "Stripe Rust Severity Over Time") -->
+<!-- ``` -->
+

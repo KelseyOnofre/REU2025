@@ -1,0 +1,273 @@
+---
+title: "Data Wrangling"
+output: 
+  html_document:
+    toc: true
+---
+
+```{r setup, include=FALSE}
+#install.packages("tidyverse")
+#install.packages("ggsci")
+library(tidyverse)
+library(ggsci)
+```
+
+
+
+## Read in Data
+There are many ways to bring data into R. One of the simplist is using read.csv() to read in a csv file from your working directory. 
+```{r}
+FHB <- read.csv("DataSetFHB.csv") ## read.csv() will allow you to read in .csv files.
+head(FHB) # head() lets examine the first few rows of data
+
+```
+<br>  
+<br>  
+
+## Data Wrangling
+In this short workshop we will focus on Tidyverse. Tidyverse is a "package of packages" that includes many tools for data organization and visualization. All of the packages are easy to use together, because they use the same code grammer. Today we will focus mostly on the packages "ggplot2" and "dplyr" which are useful for graphing and data manipulation. 
+
+```{r}
+library(tidyverse)
+FHB <- as_tibble(FHB) #a tibble is a data frames that works well with the tidyverse
+FHB
+glimpse(FHB) ## check 
+FHB <- FHB %>% mutate(TRT = as.factor(TRT))
+glimpse(FHB) 
+```
+## Filtering
+
+It is often important to filter out parts of a data set. For example, you may want to look at a single time point within a data set. For that, filter() is useful. This is also a good time to introduce the concept of the "pipe" which is either "|>" or "%>%". Note: "|>" was introduced as the new pipe in R in 2021. Let's look at an example where we are filtering out one environment of our field data: 
+```{r}
+FHB |> filter(ENV == "BEL_19") ## this new data frame won't save unless we assign it to a new object
+FHB2 <- FHB |> filter(ENV == "BEL_19")
+FHB2 ## new data frame filters to just a single environment
+
+```
+
+## Summarise
+
+You can also summarize data using dplyr summarise(). 
+
+```{r}
+avgIND <- FHB |> ## data set to take an action on
+  group_by(VAR, TRT) |> ## how I want my data grouped. Here I will summarize for each treatment, by variety
+  summarise(meanIND = mean(IND)) ## meanIND is the name for my new, summarize column in my data set. I will use mean() to summarize disease  INDEX. 
+avgIND
+
+avgIND <- FHB |> ## data set to take an action on
+  group_by(VAR) |> ## how I want my data grouped. Here I will summarize across variety
+  summarise(meanIND = mean(IND, na.rm = TRUE)) ## meanIND is the name for my new, summarize column in my data set. I will use mean() to summarize disease  INDEX. Remove nas. 
+avgIND
+```
+
+
+
+
+## Re-arrange data  
+* mutate()  
+* select()  
+* rename()  
+* relocate()  
+
+### Mutate 
+You can use mutate() to calculate a new column in your dataframe based on values in the existing data   
+```{r}
+FHB |>
+  mutate(
+    INDEX = (INC*SEV)/100,
+    .after = 2 ## put the new column after the second column so we can see it more easily. 
+  )
+```
+
+### Select 
+This is another option for subsetting out our data. 
+```{r}
+FHB |>
+  select(VAR, TRT, YLD)
+```
+
+
+### Rename 
+Sometimes it can be useful to rename our columns without going back to the origional file. 
+```{r}
+FHB |>
+  rename(Variety = VAR)
+```
+
+
+### Relocate  
+
+It can be useful to move columns around in our data frame.
+```{r}
+FHB |> 
+  relocate(YEAR:REP, .after = TRT) ## here we move the columns from year to rep to after the TRT column 
+
+```
+<br>
+
+## Graphing 
+Here we will walk through the basics of creating graphs with ggplot2. There are extensive options available within the ggplot2 framework. Would encourage you to explore the vast online documentation on the subject. Here we will aim to become familiar with the logic behind ggplot2 graphs. 
+```{r, fig.height=12}
+ggplot(data = FHB, aes(x = TRT, y = IND)) + 
+  geom_boxplot() +
+  geom_jitter(aes(color = TRT), size = 3, width = 0.2, alpha = .5) + 
+  facet_wrap(~VAR, ncol = 1) + 
+  scale_color_bmj() + 
+  labs(title = "FHB Index in response to variety and fungicide", 
+                                 x = "Treatment",
+                                 y = "FHB Index (%)",
+                                 color = "Treatment") + 
+  theme(
+    panel.background = element_blank() ,
+    panel.grid.major = element_blank(),
+    panel.border     = element_rect(colour = "black", fill = NA) ,
+    
+    axis.text.y  = element_text(colour = "black"),
+    axis.text.x  = element_text(colour = "black"),
+    title = element_text(face = "bold", size = 13),
+    
+    legend.key = element_rect(fill = "white"),
+    legend.text = element_text(colour = "black", size=12),
+    
+    strip.text.x =  element_text(hjust =0.01, face = "bold", size = 14),
+    strip.background =  element_blank())
+
+
+```
+
+
+
+the ggplot fungicide is "buildable"
+
+```{r}
+ggplot() ### simply initiates a blank graph
+ggplot(data = FHB, aes(x = TRT, y = IND)) ## specify data source and x and y axis
+```
+Now we can tell ggplot what type of graph we want. Let's start with a boxplot. 
+```{r}
+ggplot(data = FHB, aes(x = TRT, y = IND)) + geom_boxplot()
+```
+
+Violin plots are similar. We can layer elements. We can also adjust the width of the elements. 
+```{r}
+ggplot(data = FHB, aes(x = TRT, y = IND))  + geom_violin() + geom_boxplot(width = 0.2)
+
+```
+
+Here we can make a more simple bar chart and let ggplot know that we want to summarize the data (will default to the mean). 
+```{r}
+ggplot(data = FHB, aes(x = TRT, y = IND))  + geom_bar(stat = "summary")
+
+```
+
+Here we can layer points on our boxplot.
+```{r}
+ggplot(data = FHB, aes(x = TRT, y = IND)) + geom_boxplot() + geom_point() 
+```
+
+It is often useful to "jitter" the points for easier visualization. 
+```{r}
+ggplot(data = FHB, aes(x = TRT, y = IND)) + 
+  geom_boxplot() + 
+  geom_jitter() # layer jittered points on  top of our box plot
+```
+
+We can start to adjust the look. Notice that size affects the size of the points, width tells us how wide our points go. The alpha allows us to make the points transparent. Try playing around with those numbers. 
+```{r}
+ggplot(data = FHB, aes(x = TRT, y = IND)) + 
+  geom_boxplot() + 
+  geom_jitter(aes(color = TRT), size = 3, width = 0.2, alpha = .5) ## adjust the look of the points. 
+```
+
+Facet can be useful when we have logical groups to our data like timepoints or treatments. Here we can group our fungicide treatments by variety. 
+```{r, fig.height=12}
+ggplot(data = FHB, aes(x = TRT, y = IND)) + 
+  geom_boxplot() + 
+  geom_jitter(aes(color = TRT), size = 3, width = 0.2, alpha = .5) + 
+  facet_wrap(~VAR, ncol = 1) #facet
+```
+
+
+There are many ways to adjust colors of a graph. Here, let's change the color of the points. Here I chose random colors. R knows certain colors and there are good lists online. R can also read hex codes. 
+```{r, fig.height=12}
+ggplot(data = FHB, aes(x = TRT, y = IND)) + 
+  geom_boxplot() + 
+  geom_jitter(aes(color = TRT), size = 3, width = 0.2, alpha = .5) + # color specified here
+  facet_wrap(~VAR, ncol = 1) + 
+  scale_color_manual(values = c("purple", "green", "pink", "orange")) #set color of points 
+```
+
+
+Packages exist that have pre-determined color palettes. Here we use the library ggsci and a palette that matches the journal bmj. There are many options available. Would you like to test a few? 
+```{r, fig.height=12}
+library(ggsci)
+ggplot(data = FHB, aes(x = TRT, y = IND)) + 
+  geom_boxplot() + 
+  geom_jitter(aes(color = TRT), size = 3, width = 0.2, alpha = .5) + 
+  facet_wrap(~VAR, ncol = 1) + 
+  scale_color_bmj()
+
+```
+
+ggplot has a few set themes that change the overall look of our plot. Here we use "theme_bw". 
+```{r, fig.height=12}
+ggplot(data = FHB, aes(x = TRT, y = IND)) + 
+  geom_boxplot() + 
+  geom_jitter(aes(color = TRT), size = 3, width = 0.2, alpha = .5) + 
+  facet_wrap(~VAR, ncol = 1) + 
+  scale_color_bmj() + 
+  theme_bw()
+
+```
+
+
+We often want to customize our plot labels. 
+```{r, fig.height=12}
+library(ggsci)
+ggplot(data = FHB, aes(x = TRT, y = IND)) + 
+  geom_boxplot() + 
+  geom_jitter(aes(color = TRT), size = 3, width = 0.2, alpha = .5) + 
+  facet_wrap(~VAR, ncol = 1) + 
+  scale_color_bmj() + 
+  theme_bw(base_size = 20) + # set text size
+  labs(title = "FHB Index in response to variety and fungicide", 
+                                 x = "Treatment",
+                                 y = "FHB Index (%)",
+                                 color = "Treatment") 
+
+```
+
+
+We can use theme() to change many aspects of the graph instead of (or in addtion to) using the preset themes like theme_bw(). 
+```{r, fig.height=12}
+ggplot(data = FHB, aes(x = TRT, y = IND)) + 
+  geom_boxplot() +
+  geom_jitter(aes(color = TRT), size = 3, width = 0.2, alpha = .5) + 
+  facet_wrap(~VAR, ncol = 1) + 
+  scale_color_bmj() + 
+  labs(title = "FHB Index in response to variety and fungicide", 
+                                 x = "Treatment",
+                                 y = "FHB Index (%)",
+                                 color = "Treatment") + 
+  theme(
+    panel.background = element_blank() ,
+    panel.grid.major = element_blank(),
+    panel.border     = element_rect(colour = "black", fill = NA) ,
+    
+    axis.text.y  = element_text(colour = "black"),
+    axis.text.x  = element_text(colour = "black"),
+    title = element_text(face = "bold", size = 13),
+    
+    legend.key = element_rect(fill = "white"),
+    legend.text = element_text(colour = "black", size=12),
+    
+    strip.text.x =  element_text(hjust =0.01, face = "bold", size = 14),
+    strip.background =  element_blank())
+
+
+```
+
+
+Final note: sometimes it is necessary to bring together two graphs and to add letter annotation (A, B, etc.). The package 'ggpubr' is great for that application. 
+

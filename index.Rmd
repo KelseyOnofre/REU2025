@@ -1,0 +1,29 @@
+---
+title: "  "
+---
+
+\
+
+## Intro to R and Data Visualization
+ 
+\ 
+ 
+#### DATE AND TIME: Tuesday, July 1st 1:00pm-4:00pm  CST
+#### LOCATION: Throckmorton 4031
+
+
+***
+
+### Workshop Organizer: 
+
+ * Kelsey Andersen Onofre, Assistant Professor, Kansas State University
+
+
+*** 
+
+### Background 
+
+High quality visualizations, such as graphs and maps, are critical for effectively communicating science. In this workshop participants will gain an understanding of the workflow and data-wrangling necessary for creating publication ready graphs and maps in R. Participants will become familiar with various graph types (including boxplots, scatterplots, networks, and heatmaps) and their best use cases through motivating, agriculture-related examples and hand-on exercises. Participants will also be introduced to an overview of visualization packages. Attendees will learn the basics of not only selecting the correct graph, but also proper design elements such as labeling, sizing, legends, and coloring. This workshop is intended to be introductory level, previous R experience is welcome but not required. Participants are encouraged to have an up-to-date version of R installed prior to the workshop. Workshop material and additional pre-work will be provided in advance of the workshop.
+
+
+*** 

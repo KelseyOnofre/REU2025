@@ -1,0 +1,21 @@
+---
+title: "Pre-Workshop Set Up"
+---
+
+\
+
+To ensure that you can fully participate during the workshop, please make sure you have the most recent versions of R and R Studio installed on your computer. Even if you have installed R in the past, it will be important for you to make sure you have the latest version. 
+
+#### To R download R:  
+1. Go to https://cran.r-project.org/  
+2. Click "Download R for Mac/Windows"  
+3. Download the appropriate file:  
+   - Windows users click Base, and download the installer for the latest R version  
+   - Mac users select the file R-4.0.3 that aligns with your OS version  
+4. Follow the instructions of the installer   
+
+#### To download RStudio:  
+1. Go to RStudio for desktop https://www.rstudio.com/products/rstudio/download/#download  
+2. Select the install file for your OS  
+3. Follow the instructions of the installer  
+
